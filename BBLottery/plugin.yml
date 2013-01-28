@@ -1,0 +1,16 @@
+name: BBLottery
+main: me.xcelsior.bblottery.BBLottery
+version: 0.1
+website: http://
+author: Xcelsior
+depends: [Vault]
+
+description: >
+             The lottery of block box
+commands:
+  lottery:
+    description: Participate in the lottery
+    aliases: [l]
+    usage: |
+           /<command> 
+

@@ -1,0 +1,6 @@
+intervall: 60
+pot: 10000
+range: 50
+maxTickets: 1
+ticketPrice: 100
+tax: 0.1
