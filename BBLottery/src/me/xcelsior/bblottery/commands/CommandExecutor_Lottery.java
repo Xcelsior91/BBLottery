@@ -55,6 +55,9 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 				else if(args[0].equalsIgnoreCase("info")){
 					info(sender);
 				}
+				else if(args[0].equalsIgnoreCase("stats")){
+					stats(sender);
+				}
 				else if(args[0].equalsIgnoreCase("reload")){
 					if(args.length>1&&args[1].equalsIgnoreCase("-f")){
 						reload(sender, true);
@@ -114,7 +117,6 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 		sender.sendMessage(prefix+"Ticketprice: "+price);
 		sender.sendMessage(prefix+"Overall tickets bought for current draw: "+ ticketNum+".");
 		sender.sendMessage(prefix+"The tax on the tickets is "+tax+"%.");
-		sender.sendMessage(plugin.getManager().getStats());
 		
 		if(sender instanceof Player){
 			sender.sendMessage("");
@@ -126,6 +128,14 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 					sender.sendMessage(prefix+" Ticket no. "+ticketNums[i]+ ", you would get "+fraction+" if this ticket would get drawn now.");
 				}
 			}
+		}
+	}
+	
+	private void stats(CommandSender sender){
+		sender.sendMessage(plugin.getManager().getStats());
+		sender.sendMessage(prefix+"Player-Stats");
+		for(String s:plugin.getManager().getPlayerStats()){
+			sender.sendMessage(s);
 		}
 	}
 	

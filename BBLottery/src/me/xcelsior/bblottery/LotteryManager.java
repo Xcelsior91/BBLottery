@@ -1,6 +1,7 @@
 package me.xcelsior.bblottery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.xcelsior.bblottery.tasks.Task_Draw;
@@ -30,6 +31,7 @@ public class LotteryManager {
 	int totalWins;
 	int totalWinners;
 	double totalAmountWon;
+	HashMap<OfflinePlayer, String> playerStats;
 
 	public LotteryManager(BBLottery plugin) {
 		this.plugin = plugin;
@@ -79,6 +81,14 @@ public class LotteryManager {
 			totalWins=plugin.getSave().getCustomConfig().getInt("stats.total-wins");
 			totalWinners=plugin.getSave().getCustomConfig().getInt("stats.total-winners");
 			totalAmountWon=plugin.getSave().getCustomConfig().getDouble("stats.total-amount-won");
+			
+			playerStats=new HashMap<>();
+			for(String s:plugin.getSave().getCustomConfig().getStringList("playerstats")){
+				String[] ps=s.split(":");
+				Player p=plugin.getServer().getPlayerExact(ps[0]);
+				String st=ps[1]+":"+ps[2];
+				playerStats.put(p, st);
+			}
 		}
 	}
 
@@ -99,6 +109,14 @@ public class LotteryManager {
 		plugin.getSave().getCustomConfig().set("stats.total-wins", totalWins);
 		plugin.getSave().getCustomConfig().set("stats.total-winners", totalWinners);
 		plugin.getSave().getCustomConfig().set("stats.total-amount-won", totalAmountWon);
+		
+
+		ArrayList<String> list=new ArrayList<>();
+		for(OfflinePlayer p:playerStats.keySet()){
+			list.add(p.getName()+":"+playerStats.get(p));
+		}
+		plugin.getSave().getCustomConfig().set("playerStats", list);
+		
 		plugin.getSave().saveCustomConfig();
 
 	}
@@ -189,20 +207,32 @@ public class LotteryManager {
 							+ ChatColor.GREEN
 							+ (winners.size() > 1 ? "Winners are: "
 									: "Winner is: ") + winner + "!");
-			if(tickets.get(drawn - 1).size()==1){
-				plugin.log("blub");
-				if(tickets.get(drawn - 1).get(0).getPlayer()!=null){
-					plugin.log("blubblub");
-					tickets.get(drawn - 1).get(0).getPlayer().sendMessage(prefix+ChatColor.GREEN+"You won the whole pot! You got "+jackpotCurrent+"!");
+			if(tickets.get(drawn - 1).size()==1){//single winner
+				OfflinePlayer pl=tickets.get(drawn-1).get(0);
+				if(pl.getPlayer()!=null){
+					pl.getPlayer().sendMessage(prefix+ChatColor.GREEN+"You won the whole pot! You got "+jackpotCurrent+"!");
 				}
-				BBLottery.economy.depositPlayer(tickets.get(drawn - 1).get(0).getName(), jackpotCurrent);
-			}else{
+				BBLottery.economy.depositPlayer(pl.getName(), jackpotCurrent);
+				
+				String[] st=playerStats.get(pl).split(":");
+				double totalAmntPlayerWon=Double.parseDouble(st[0])+jackpotCurrent;
+				int totalTimesWon=Integer.parseInt(st[1])+1;
+				String newStats=totalAmntPlayerWon+":"+totalTimesWon;
+				playerStats.put(pl, newStats);
+				
+			}else{//multiple winners
 				double amnt=jackpotCurrent/tickets.get(drawn - 1).size();
 				for(OfflinePlayer p:tickets.get(drawn - 1)){
 					if(p.getPlayer()!=null){
 						p.getPlayer().sendMessage(prefix+ChatColor.GREEN+"You got "+amnt+BBLottery.economy.currencyNameSingular()+"of the pot!");
 					}
 					BBLottery.economy.depositPlayer(p.getName(), amnt);
+					
+					String[] st=playerStats.get(p).split(":");
+					double totalAmntPlayerWon=Double.parseDouble(st[0])+amnt;
+					int totalTimesWon=Integer.parseInt(st[1])+1;
+					String newStats=totalAmntPlayerWon+":"+totalTimesWon;
+					playerStats.put(p, newStats);
 				}
 			}
 			jackpotCurrent=jackpotInit;
@@ -329,6 +359,18 @@ public class LotteryManager {
 		stats[3]=prefix+ChatColor.DARK_GREEN+"Total number of winners of the lottery: "+totalWinners;
 		stats[4]=prefix+ChatColor.DARK_GREEN+"Total amount of money won through the lottery: "+totalAmountWon;
 		save();
+		return stats;
+	}
+	
+	public ArrayList<String> getPlayerStats(){
+		ArrayList<String> stats=new ArrayList<>();
+		
+		for(OfflinePlayer p:playerStats.keySet()){
+			String[] s=playerStats.get(p).split(":");
+			stats.add(prefix+ChatColor.DARK_GREEN+p.getName()+" won "+s[0]+" in "+s[1]+" draws");
+		}
+		
+		
 		return stats;
 	}
 }
