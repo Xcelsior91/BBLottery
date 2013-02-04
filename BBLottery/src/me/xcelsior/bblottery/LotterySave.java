@@ -31,6 +31,9 @@ public class LotterySave {
 	        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 	        customConfig.setDefaults(defConfig);
 	    }
+	    if(!customConfigFile.exists()){
+    		saveCustomConfig();
+    	}
 	}
 	
 	public FileConfiguration getCustomConfig() {

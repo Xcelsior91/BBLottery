@@ -150,6 +150,8 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 			if(flag){
 				sender.sendMessage(prefix+"Reloading config...");
 				plugin.reloadConfig();
+				plugin.getLoc().reloadCustomConfig();
+				plugin.getLoc().loadStrings();
 				sender.sendMessage(prefix+"Reloading lottery...");
 				plugin.getSave().reloadCustomConfig();
 				sender.sendMessage(prefix+"Finished!");
@@ -157,6 +159,8 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 				plugin.getManager().save();
 				sender.sendMessage(prefix+"Reloading config...");
 				plugin.reloadConfig();
+				plugin.getLoc().reloadCustomConfig();
+				plugin.getLoc().loadStrings();
 				sender.sendMessage(prefix+"Finished!");
 			}
 			plugin.getManager().loadConfigData(flag);

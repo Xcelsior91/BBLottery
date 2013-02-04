@@ -26,6 +26,7 @@ public class BBLottery extends JavaPlugin{
     public static Economy economy = null;
     
     public LotterySave loSa;
+    public Localization loc;
     public LotteryManager manager;
 
 	private String prefix;
@@ -45,6 +46,8 @@ public class BBLottery extends JavaPlugin{
 		saveDefaultConfig();
 		loSa=new LotterySave(this);
 		manager=new LotteryManager(this);
+		loc=new Localization(this);
+		loc.loadStrings();
 		
 		getCommand("lottery").setExecutor(new CommandExecutor_Lottery(this));
 
@@ -55,7 +58,6 @@ public class BBLottery extends JavaPlugin{
 	public void onDisable(){
 		log("disabled "+description.getFullName());
 		manager.save();
-
 	}
 	public void log(String message){
 		log.info(prefix+message);
@@ -88,8 +90,9 @@ public class BBLottery extends JavaPlugin{
 		return manager;
 	}
 	
-
-
+	public Localization getLoc(){
+		return loc;
+	}
 
 
 
