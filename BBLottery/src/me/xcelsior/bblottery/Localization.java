@@ -7,7 +7,6 @@ import java.util.logging.Level;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.util.FileUtil;
 
 public class Localization {
 
@@ -15,50 +14,48 @@ public class Localization {
 	private File customConfigFile = null;
 	
 	private BBLottery plugin;
-	
-	public static String PREFIX;
-	public static String TICKET_BOUGHT;
-	public static String[] HELP;
-	public static String ERROR_NO_PLAYER;
-	public static String ERROR_RANGE;
-	public static String ERROR_MONEY;
-	public static String ERROR_MAXTICKETS;
-	public static String INFO_JACKPOT;
-	public static String INFO_TICKETS_ON_DRAW;
-	public static String INFO_TAX;
-	public static String INFO_PRICE;
-	public static String INFO_INTRO;
-	public static String INFO_TICKETS_BOUGHT;
-	public static String STATS_INTRO;
-	public static String STATS_TICKETS;
-	public static String STATS_DRAWS;
-	public static String STATS_WON_DRAWS;
-	public static String STATS_WINNERS;
-	public static String STATS_AMOUNT;
-	public static String STATS_AMOUNT_PP;
-	public static String DRAW_INTRO;
-	public static String DRAW_SINGLE_WINNER;
-	public static String DRAW_MULTI_WINNER;
-	public static String DRAW_SINGLE_NOTIFICATION;
-	public static String DRAW_MULTI_NOTIFICATION;
-	public static String DRAW_NO_WINNER;
+
+	public  String TICKET_BOUGHT;
+	public  String[] HELP;
+	public  String ERROR_NO_PLAYER;
+	public  String ERROR_RANGE;
+	public  String ERROR_MONEY;
+	public  String ERROR_MAXTICKETS;
+	public  String INFO_JACKPOT;
+	public  String INFO_TICKETS_ON_DRAW;
+	public  String INFO_TAX;
+	public  String INFO_PRICE;
+	public  String INFO_INTRO;
+	public  String INFO_TICKETS_BOUGHT;
+	public  String STATS_INTRO;
+	public  String STATS_TICKETS;
+	public  String STATS_DRAWS;
+	public  String STATS_WON_DRAWS;
+	public  String STATS_WINNERS;
+	public  String STATS_AMOUNT;
+	public  String STATS_AMOUNT_PP;
+	public  String DRAW_INTRO;
+	public  String DRAW_SINGLE_WINNER;
+	public  String DRAW_MULTI_WINNER;
+	public  String DRAW_SINGLE_NOTIFICATION;
+	public  String DRAW_MULTI_NOTIFICATION;
+	public  String DRAW_NO_WINNER;
 	
 	
 	public Localization(BBLottery plugin){
 		this.plugin=plugin;
-		saveDefaultConfig();
 		reloadCustomConfig();
-		
+		saveDefaultConfig();
 	}
 	
 	public void reloadCustomConfig() {
 	    if (customConfigFile == null) {
-	    customConfigFile = new File(plugin.getDataFolder(), System.getProperty("file.separator")+"lang"+System.getProperty("file.separator")+"Lang"+plugin.getConfig().getString("Language")+".yml");
+	    customConfigFile = new File(plugin.getDataFolder(), "Lang.yml");
 	    }
 	    customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 	 
 	    // Look for defaults in the jar
-	    InputStream defConfigStream = plugin.getResource("LangEN.yml");
+	    InputStream defConfigStream = plugin.getResource("Lang.yml");
 	    if (defConfigStream != null) {
 	        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 	        customConfig.setDefaults(defConfig);
@@ -73,7 +70,7 @@ public class Localization {
 	}
 	public void saveDefaultConfig() {
 	    if (!customConfigFile.exists()) {            
-	         this.plugin.saveResource("LangEN.yml", false);
+	         this.plugin.saveResource("Lang.yml", false);
 	     }
 	}
 	
@@ -89,44 +86,49 @@ public class Localization {
 	}
 	
 	public void loadStrings(){
-		PREFIX=replace(customConfig.getString("prefix"));
-		TICKET_BOUGHT=replace(customConfig.getString("ticketBought"));
-		HELP=replace(customConfig.getStringList("help").toArray(new String[8]));
-		ERROR_NO_PLAYER=replace(customConfig.getString("error.noPlayer"));
-		ERROR_RANGE=replace(customConfig.getString("error.ticketRange"));
-		ERROR_MONEY=replace(customConfig.getString("error.money"));
-		ERROR_MONEY=replace(customConfig.getString("error.maxTickets"));
-		INFO_JACKPOT=replace(customConfig.getString("info.jackpot"));
-		INFO_TICKETS_ON_DRAW=replace(customConfig.getString("info.ticketsOnDraw"));
-		INFO_PRICE=replace(customConfig.getString("info.price"));
-		INFO_TAX=replace(customConfig.getString("info.tax"));
-		INFO_INTRO=replace(customConfig.getString("info.introBoughtTickets"));
-		INFO_TICKETS_BOUGHT=replace(customConfig.getString("info.boughtTicketInfo"));
-		STATS_INTRO=replace(customConfig.getString("stats.intro"));
-		STATS_TICKETS=replace(customConfig.getString("stats.tickets"));
-		STATS_DRAWS=replace(customConfig.getString("stats.draws"));
-		STATS_WON_DRAWS=replace(customConfig.getString("stats.wonDraws"));
-		STATS_WINNERS=replace(customConfig.getString("stats.winners"));
-		STATS_AMOUNT=replace(customConfig.getString("stats.amount"));
-		STATS_AMOUNT_PP=replace(customConfig.getString("stats.amountPP"));
-		DRAW_INTRO=replace(customConfig.getString("draw.intro"));
-		DRAW_SINGLE_WINNER=replace(customConfig.getString("draw.singleWinner"));
-		DRAW_MULTI_WINNER=replace(customConfig.getString("draw.multiWinner"));
-		DRAW_SINGLE_NOTIFICATION=replace(customConfig.getString("draw.singleNotification"));
-		DRAW_MULTI_NOTIFICATION=replace(customConfig.getString("draw.multiNotification"));
-		DRAW_NO_WINNER=replace(customConfig.getString("draw.noWinner"));
+		TICKET_BOUGHT=customConfig.getString("ticketBought");
+		HELP=customConfig.getStringList("help").toArray(new String[9]);
+		ERROR_NO_PLAYER=customConfig.getString("error.noPlayer");
+		ERROR_RANGE=customConfig.getString("error.ticketRange");
+		ERROR_MONEY=customConfig.getString("error.money");
+		ERROR_MAXTICKETS=customConfig.getString("error.maxTickets");
+		INFO_JACKPOT=customConfig.getString("info.jackpot");
+		INFO_TICKETS_ON_DRAW=customConfig.getString("info.ticketsOnDraw");
+		INFO_PRICE=customConfig.getString("info.price");
+		INFO_TAX=customConfig.getString("info.tax");
+		INFO_INTRO=customConfig.getString("info.introBoughtTickets");
+		INFO_TICKETS_BOUGHT=customConfig.getString("info.boughtTicketInfo");
+		STATS_INTRO=customConfig.getString("stats.intro");
+		STATS_TICKETS=customConfig.getString("stats.tickets");
+		STATS_DRAWS=customConfig.getString("stats.draws");
+		STATS_WON_DRAWS=customConfig.getString("stats.wonDraws");
+		STATS_WINNERS=customConfig.getString("stats.winners");
+		STATS_AMOUNT=customConfig.getString("stats.amount");
+		STATS_AMOUNT_PP=customConfig.getString("stats.amountPP");
+		DRAW_INTRO=customConfig.getString("draw.intro");
+		DRAW_SINGLE_WINNER=customConfig.getString("draw.singleWinner");
+		DRAW_MULTI_WINNER=customConfig.getString("draw.multiWinner");
+		DRAW_SINGLE_NOTIFICATION=customConfig.getString("draw.singleNotification");
+		DRAW_MULTI_NOTIFICATION=customConfig.getString("draw.multiNotification");
+		DRAW_NO_WINNER=customConfig.getString("draw.noWinner");
 	}
 
 	
 	public String replace(String orig){
-		return orig.replaceAll("%r", ""+plugin.getManager().getRange())
-				.replaceAll("%pr", ""+plugin.getManager().getPrice())
-				.replaceAll("%jp", ""+plugin.getManager().getJackpot())
-				.replaceAll("%bt", ""+plugin.getManager().getBoughtTickets())
-				.replaceAll("%t", ""+(plugin.getManager().getTax()*100));
+		String s=""+orig;
+		s=s.replaceAll("%r", ""+plugin.getManager().getRange());
+		s=s.replaceAll("%pr", ""+plugin.getManager().getPrice());
+		s=s.replaceAll("%jp", ""+plugin.getManager().getJackpot());
+		s=s.replaceAll("%bt", ""+plugin.getManager().getBoughtTickets());
+		s=s.replaceAll("%t", ""+(plugin.getManager().getTax()*100));
+		return s;
+				
+				
+				
+				
 	}
 	
-	private String[] replace(String[] orig){
+	public String[] replace(String[] orig){
 		String[] newStringArray=new String[orig.length];
 		for(int i=0;i<orig.length;i++){
 			newStringArray[i]=replace(orig[i]);

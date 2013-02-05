@@ -23,7 +23,7 @@ public class LotteryManager {
 	double price;
 	double tax;
 	int range;
-	String prefix = ChatColor.GOLD + "["+Localization.PREFIX+"]";
+	String prefix = ChatColor.GOLD + "[Lottery]";
 	BBLottery plugin;
 	int drawTaskID=-1;
 	int totalDraws;
@@ -32,12 +32,13 @@ public class LotteryManager {
 	int totalWinners;
 	double totalAmountWon;
 	HashMap<OfflinePlayer, String> playerStats;
+	Localization loc;
 
 	public LotteryManager(BBLottery plugin) {
 		this.plugin = plugin;
 		
 		loadConfigData(true);
-		
+		loc=plugin.getLoc();
 		drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
 
 	}
@@ -150,13 +151,13 @@ public class LotteryManager {
 		if (checkTickets(pl)) {
 			int ticketNum = (int) (Math.random() * range);
 			tickets.get(ticketNum).add(pl);
-			pl.sendMessage(prefix+ChatColor.GREEN+Localization.TICKET_BOUGHT.replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+(ticketNum+1)+ChatColor.GREEN));
+			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHT).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+(ticketNum+1)+ChatColor.GREEN));
 			jackpotCurrent+=(price-(price*tax));
 			totalTickets++;
 			save();
 			return true;
 		} else
-			pl.sendMessage(prefix+ChatColor.GREEN+Localization.ERROR_MAXTICKETS);
+			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.ERROR_MAXTICKETS));
 			return false;
 	}
 	
@@ -169,13 +170,13 @@ public class LotteryManager {
 	public boolean buyTicket(Player pl, int num){
 		if(checkTickets(pl)){
 			tickets.get(num-1).add(pl);
-			pl.sendMessage(prefix+ChatColor.GREEN+Localization.TICKET_BOUGHT.replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+num+ChatColor.GREEN));
+			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHT).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+num+ChatColor.GREEN));
 			jackpotCurrent+=(price-(price*tax));
 			totalTickets++;
 			save();
 			return true;
 		}else {
-			pl.sendMessage(prefix+ChatColor.GREEN+Localization.ERROR_MAXTICKETS);
+			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.ERROR_MAXTICKETS));
 			save();
 			return false;
 		}
@@ -188,7 +189,7 @@ public class LotteryManager {
 		totalDraws++;
 		int drawn = ((int) (Math.random() * range)) + 1;
 		Bukkit.getServer().broadcastMessage(
-				prefix + ChatColor.GREEN + Localization.DRAW_INTRO.replaceAll("%n", ""+ ChatColor.GOLD + drawn + ChatColor.GREEN));
+				prefix + ChatColor.GREEN + loc.replace(loc.DRAW_INTRO).replaceAll("%n", ""+ ChatColor.GOLD + drawn + ChatColor.GREEN));
 		ArrayList<OfflinePlayer> winners = tickets.get(drawn - 1);
 		if (winners.size() > 0) {
 			String winner = winners.get(0).getName();
@@ -204,12 +205,12 @@ public class LotteryManager {
 			Bukkit.getServer().broadcastMessage(
 					prefix
 							+ ChatColor.GREEN
-							+ (winners.size() > 1 ? Localization.DRAW_MULTI_WINNER.replaceAll("%pn", winner)
-									: Localization.DRAW_SINGLE_WINNER.replaceAll("%pn", winner)));
+							+ (winners.size() > 1 ? loc.replace(loc.DRAW_MULTI_WINNER).replaceAll("%pn", winner)
+									: loc.replace(loc.DRAW_SINGLE_WINNER).replaceAll("%pn", winner)));
 			if(tickets.get(drawn - 1).size()==1){//single winner
 				OfflinePlayer pl=tickets.get(drawn-1).get(0);
 				if(pl.getPlayer()!=null){
-					pl.getPlayer().sendMessage(prefix+ChatColor.GREEN+Localization.DRAW_SINGLE_NOTIFICATION.replaceAll("%[n, m]",""+jackpotCurrent));
+					pl.getPlayer().sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_SINGLE_NOTIFICATION).replaceAll("%[n, m]",""+jackpotCurrent));
 				}
 				BBLottery.economy.depositPlayer(pl.getName(), jackpotCurrent);
 				
@@ -223,7 +224,7 @@ public class LotteryManager {
 				double amnt=jackpotCurrent/tickets.get(drawn - 1).size();
 				for(OfflinePlayer p:tickets.get(drawn - 1)){
 					if(p.getPlayer()!=null){
-						p.getPlayer().sendMessage(prefix+ChatColor.GREEN+Localization.DRAW_SINGLE_NOTIFICATION.replaceAll("%[n, m]",""+amnt));
+						p.getPlayer().sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_SINGLE_NOTIFICATION).replaceAll("%[n, m]",""+amnt));
 					}
 					BBLottery.economy.depositPlayer(p.getName(), amnt);
 					
@@ -238,8 +239,8 @@ public class LotteryManager {
 			
 			
 		}else{
-			Bukkit.getServer().broadcastMessage(prefix+ChatColor.GREEN+Localization.DRAW_NO_WINNER);
-			Bukkit.getServer().broadcastMessage(prefix+ChatColor.GREEN+Localization.INFO_JACKPOT);
+			Bukkit.getServer().broadcastMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_NO_WINNER));
+			Bukkit.getServer().broadcastMessage(prefix+ChatColor.GREEN+loc.replace(loc.INFO_JACKPOT));
 		}
 		resetTickets();
 		drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
@@ -352,11 +353,11 @@ public class LotteryManager {
 	public String[] getStats(){
 		String[] stats=new String[5];
 		
-		stats[0]=prefix+ChatColor.DARK_GREEN+Localization.STATS_TICKETS.replaceAll("%n", ""+totalTickets);
-		stats[1]=prefix+ChatColor.DARK_GREEN+Localization.STATS_DRAWS.replaceAll("%n", ""+totalDraws);
-		stats[2]=prefix+ChatColor.DARK_GREEN+Localization.STATS_WON_DRAWS.replaceAll("%n", ""+totalWins);
-		stats[3]=prefix+ChatColor.DARK_GREEN+Localization.STATS_WINNERS.replaceAll("%n", ""+totalWinners);
-		stats[4]=prefix+ChatColor.DARK_GREEN+Localization.STATS_AMOUNT.replaceAll("%n", ""+totalAmountWon);
+		stats[0]=prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_TICKETS).replaceAll("%n", ""+totalTickets);
+		stats[1]=prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_DRAWS).replaceAll("%n", ""+totalDraws);
+		stats[2]=prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_WON_DRAWS).replaceAll("%n", ""+totalWins);
+		stats[3]=prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_WINNERS).replaceAll("%n", ""+totalWinners);
+		stats[4]=prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_AMOUNT).replaceAll("%n", ""+totalAmountWon);
 		save();
 		return stats;
 	}
@@ -366,7 +367,7 @@ public class LotteryManager {
 		
 		for(OfflinePlayer p:playerStats.keySet()){
 			String[] s=playerStats.get(p).split(":");
-			stats.add(prefix+ChatColor.DARK_GREEN+Localization.STATS_AMOUNT_PP.replaceAll("%pn", p.getName()).replaceAll("%n",s[0]).replaceAll("%m", s[1]));
+			stats.add(prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_AMOUNT_PP).replaceAll("%pn", p.getName()).replaceAll("%n",s[0]).replaceAll("%m", s[1]));
 		}
 		
 		

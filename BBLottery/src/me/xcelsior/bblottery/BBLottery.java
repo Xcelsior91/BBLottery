@@ -45,8 +45,9 @@ public class BBLottery extends JavaPlugin{
 
 		saveDefaultConfig();
 		loSa=new LotterySave(this);
-		manager=new LotteryManager(this);
+		
 		loc=new Localization(this);
+		manager=new LotteryManager(this);
 		loc.loadStrings();
 		
 		getCommand("lottery").setExecutor(new CommandExecutor_Lottery(this));

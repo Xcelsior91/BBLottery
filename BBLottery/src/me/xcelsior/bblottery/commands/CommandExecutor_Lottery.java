@@ -22,19 +22,24 @@ import me.xcelsior.bblottery.Perms;
 
 public class CommandExecutor_Lottery implements CommandExecutor {
 	private BBLottery plugin;
-	String prefix = ChatColor.GOLD + "["+Localization.PREFIX+"]"+ChatColor.GREEN;
-	String[] usage={ChatColor.GREEN+"---------"+prefix+"---------",
-			ChatColor.GREEN+Localization.HELP[0],
-			ChatColor.GREEN+Localization.HELP[1],
-			ChatColor.YELLOW+"/lottery           "+ChatColor.GREEN+Localization.HELP[2],
-			ChatColor.YELLOW+"/lottery buy [tip] "+ChatColor.GREEN+Localization.HELP[3],
-			ChatColor.YELLOW+"/lottery info      "+ChatColor.GREEN+Localization.HELP[4],
-			ChatColor.GREEN+Localization.HELP[5],
-			ChatColor.YELLOW+"/lottery reload [-f]   "+ChatColor.GREEN+Localization.HELP[6],
-			ChatColor.YELLOW+"/lottery draw      "+ChatColor.GREEN+Localization.HELP[7]};
+	String prefix = ChatColor.GOLD + "[Lottery]"+ChatColor.GREEN;
+	String[] usage;
+	Localization loc;
 
 	public CommandExecutor_Lottery(BBLottery plugin){
 		this.plugin = plugin;
+		loc=plugin.getLoc();
+		String[] u ={ChatColor.GREEN+"---------"+prefix+"---------",
+				ChatColor.GREEN+loc.replace(loc.HELP[0]),
+				ChatColor.GREEN+loc.replace(loc.HELP[1]),
+				ChatColor.YELLOW+"/lottery           "+ChatColor.GREEN+loc.replace(loc.HELP[2]),
+				ChatColor.YELLOW+"/lottery buy [tip] "+ChatColor.GREEN+loc.replace(loc.HELP[3]),
+				ChatColor.YELLOW+"/lottery info      "+ChatColor.GREEN+loc.replace(loc.HELP[4]),
+				ChatColor.YELLOW+"/lottery stats      "+ChatColor.GREEN+loc.replace(loc.HELP[5]),
+				ChatColor.GREEN+loc.replace(loc.HELP[6]),
+				ChatColor.YELLOW+"/lottery reload [-f]   "+ChatColor.GREEN+loc.replace(loc.HELP[7]),
+				ChatColor.YELLOW+"/lottery draw      "+ChatColor.GREEN+loc.replace(loc.HELP[8])};
+		usage=u;
 	}
 
 	@Override
@@ -46,7 +51,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 			}else {
 				if(args[0].equalsIgnoreCase("buy")){
 					if (!(sender instanceof Player)) {
-						sender.sendMessage(Localization.ERROR_NO_PLAYER);
+						sender.sendMessage(loc.replace(loc.ERROR_NO_PLAYER));
 						return true;
 					}else{
 						buyTicket(sender, args);
@@ -90,10 +95,9 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 								BBLottery.economy.withdrawPlayer(sender.getName(), plugin.getManager().getPrice());
 							}
 						}else{
-							sender.sendMessage(prefix+Localization.ERROR_RANGE);
-						}
+							sender.sendMessage(prefix+loc.replace(loc.ERROR_RANGE));						}
 					}else{
-						sender.sendMessage(prefix+Localization.ERROR_RANGE);
+						sender.sendMessage(prefix+loc.replace(loc.ERROR_RANGE));
 					}
 				}else{
 					if(plugin.getManager().buyTicket((Player)sender)){
@@ -101,7 +105,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 					}
 				}
 			}else{
-				sender.sendMessage(prefix+ChatColor.GREEN+Localization.ERROR_MONEY);
+				sender.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.ERROR_MONEY));
 			}
 		}else{
 			sendNoPerm(sender);
@@ -111,19 +115,19 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 	private void info(CommandSender sender){
 		double jp=plugin.getManager().getJackpot();
 		
-		sender.sendMessage(prefix+Localization.INFO_JACKPOT);
-		sender.sendMessage(prefix+Localization.INFO_PRICE);
-		sender.sendMessage(prefix+Localization.INFO_TICKETS_ON_DRAW);
-		sender.sendMessage(prefix+Localization.INFO_TAX);
+		sender.sendMessage(prefix+loc.replace(loc.INFO_JACKPOT));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_PRICE));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_TICKETS_ON_DRAW));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_TAX));
 		
 		if(sender instanceof Player){
 			sender.sendMessage("");
 			int[] ticketNums=plugin.getManager().getTickets((Player)sender);
 			if(ticketNums.length>0){
-				sender.sendMessage(prefix+Localization.INFO_INTRO);
+				sender.sendMessage(prefix+loc.replace(loc.INFO_INTRO));
 				for(int i=0;i<ticketNums.length;i++){
 					double fraction=jp/plugin.getManager().getNumOfTicketsForTicket(ticketNums[i]-1);
-					sender.sendMessage(prefix+Localization.INFO_TICKETS_BOUGHT.replaceFirst("%n", ""+ticketNums[i]).replaceFirst("%n", ""+fraction));
+					sender.sendMessage(prefix+loc.replace(loc.INFO_TICKETS_BOUGHT).replaceFirst("%n", ""+ticketNums[i]).replaceFirst("%n", ""+fraction));
 				}
 			}
 		}
@@ -131,7 +135,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 	
 	private void stats(CommandSender sender){
 		sender.sendMessage(plugin.getManager().getStats());
-		sender.sendMessage(prefix+Localization.STATS_INTRO);
+		sender.sendMessage(prefix+loc.replace(loc.STATS_INTRO));
 		for(String s:plugin.getManager().getPlayerStats()){
 			sender.sendMessage(s);
 		}

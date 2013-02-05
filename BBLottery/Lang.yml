@@ -3,9 +3,11 @@
 #%jp -> Jackpot
 #%bt -> tickets bought for draw
 #%t -> tax on tickets
+
+#please use the following variables only in strings which are containing them per default
 #%n,%m -> specific numbers
 #%pn -> player name(s)
-prefix: "Lottery"
+
 ticketBought: "You bought a ticket! Your ticket has the number %n!"
 #Do not add/remove lines!
 help:
@@ -13,7 +15,8 @@ help:
   - "There are the following Commands that you may have acces to:"
   - "Shows this help."
   - "Buys yourself a ticket for the next lottery, you may chose a number yourself if you want."
-  - "Shows you the amount of money in the pot and, if you have bought a ticket, how much money you would get if the pot is split."
+  - "Shows you the current Jackpot, ticketprice, tickets bought, ticket-tax and infos about tickets you bought"
+  - "Shows you stats about the lottery and about the winners of the lottery"
   - "The following commands are mostly for ops or Admins, so you may not have acces to them:"
   - "Reloads the config, if -f is set it also reloads the lottery-data.!"
   - "Forces the next drawing of the lottery."
@@ -38,8 +41,7 @@ draw:
   singleNotification: "You won the whole pot! You got: %n"
   multiWinner: "Winners are: %pn!"
   multiNotification: "You got %n of the pot!"
-  noWinner: "Nobody won the lottery!"
-    
+  noWinner: "Nobody won the lottery!"   
 error:
   noPlayer: "You have to be a player to buy tickets!"
   ticketRange: "Please enter a valid ticketnumber between 1 and %r!"
