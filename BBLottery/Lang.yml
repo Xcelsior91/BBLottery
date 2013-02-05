@@ -1,0 +1,49 @@
+#%r -> Ticketrange
+#%pr -> Ticketprice
+#%jp -> Jackpot
+#%bt -> tickets bought for draw
+#%t -> tax on tickets
+
+#please use the following variables only in strings which are containing them per default
+#%n,%m -> specific numbers
+#%pn -> player name(s)
+
+ticketBought: "You bought a ticket! Your ticket has the number %n!"
+#Do not add/remove lines!
+help:
+  - "This is the help for the Lottery!"
+  - "There are the following Commands that you may have acces to:"
+  - "Shows this help."
+  - "Buys yourself a ticket for the next lottery, you may chose a number yourself if you want."
+  - "Shows you the current Jackpot, ticketprice, tickets bought, ticket-tax and infos about tickets you bought"
+  - "Shows you stats about the lottery and about the winners of the lottery"
+  - "The following commands are mostly for ops or Admins, so you may not have acces to them:"
+  - "Reloads the config, if -f is set it also reloads the lottery-data.!"
+  - "Forces the next drawing of the lottery."
+info:
+  jackpot: "Current Jackpot: %jp"
+  price: "Ticketprice: %pr"
+  ticketsOnDraw: "Overall tickets bought for current draw: %bt"
+  tax: "The tax on the tickets is %t%."
+  introBoughtTickets: "You bought the following tickets:"
+  boughtTicketInfo: "Ticket no. %n, you would get %n if this ticket would get drawn now!"
+stats:
+  intro: "Player-Stats"
+  tickets: "Total tickets bought: %n"
+  draws: "Total draws commenced: %n"
+  wonDraws: "Total number of won draws: %n"
+  winners: "Total number of winners of the lottery: %n"
+  amount: "Total amount of money won through the lottery: %n"
+  amountPP: "%pn won %n in %m draws"
+draw:
+  intro: "Drawing......%n!"
+  singleWinner: "Winner is: %pn!"
+  singleNotification: "You won the whole pot! You got: %n"
+  multiWinner: "Winners are: %pn!"
+  multiNotification: "You got %n of the pot!"
+  noWinner: "Nobody won the lottery!"   
+error:
+  noPlayer: "You have to be a player to buy tickets!"
+  ticketRange: "Please enter a valid ticketnumber between 1 and %r!"
+  money: "You do not have enough money to buy a lottery-ticket!"
+  maxTickets: "You allready have the maximum amount of tickets!"

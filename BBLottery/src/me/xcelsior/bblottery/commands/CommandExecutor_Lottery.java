@@ -16,24 +16,30 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.xcelsior.bblottery.BBLottery;
+import me.xcelsior.bblottery.Localization;
 import me.xcelsior.bblottery.Perms;
 
 
 public class CommandExecutor_Lottery implements CommandExecutor {
 	private BBLottery plugin;
 	String prefix = ChatColor.GOLD + "[Lottery]"+ChatColor.GREEN;
-	String[] usage={ChatColor.GREEN+"---------"+prefix+"---------",
-			ChatColor.GREEN+"This is the help for the Lottery!",
-			ChatColor.GREEN+"There are the following Commands that you may have acces to:",
-			ChatColor.YELLOW+"/lottery           "+ChatColor.GREEN+"Shows this help.",
-			ChatColor.YELLOW+"/lottery buy [tip] "+ChatColor.GREEN+"Buys yourself a ticket for the next lottery, you may chose a number yourself if you want.",
-			ChatColor.YELLOW+"/lottery info      "+ChatColor.GREEN+"Shows you the amount of money in the pot and, if you have bought a ticket, how much money you would get if the pot is split.",
-			ChatColor.GREEN+"The following commands are mostly for ops or Admins, so you may not have acces to them:",
-			ChatColor.YELLOW+"/lottery reload [-f]   "+ChatColor.GREEN+"Reloads the config, if -f is set it also reloads the lottery-data.!",
-			ChatColor.YELLOW+"/lottery draw      "+ChatColor.GREEN+"Forces the next drawing of the lottery."};
+	String[] usage;
+	Localization loc;
 
 	public CommandExecutor_Lottery(BBLottery plugin){
 		this.plugin = plugin;
+		loc=plugin.getLoc();
+		String[] u ={ChatColor.GREEN+"---------"+prefix+"---------",
+				ChatColor.GREEN+loc.replace(loc.HELP[0]),
+				ChatColor.GREEN+loc.replace(loc.HELP[1]),
+				ChatColor.YELLOW+"/lottery           "+ChatColor.GREEN+loc.replace(loc.HELP[2]),
+				ChatColor.YELLOW+"/lottery buy [tip] "+ChatColor.GREEN+loc.replace(loc.HELP[3]),
+				ChatColor.YELLOW+"/lottery info      "+ChatColor.GREEN+loc.replace(loc.HELP[4]),
+				ChatColor.YELLOW+"/lottery stats      "+ChatColor.GREEN+loc.replace(loc.HELP[5]),
+				ChatColor.GREEN+loc.replace(loc.HELP[6]),
+				ChatColor.YELLOW+"/lottery reload [-f]   "+ChatColor.GREEN+loc.replace(loc.HELP[7]),
+				ChatColor.YELLOW+"/lottery draw      "+ChatColor.GREEN+loc.replace(loc.HELP[8])};
+		usage=u;
 	}
 
 	@Override
@@ -45,7 +51,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 			}else {
 				if(args[0].equalsIgnoreCase("buy")){
 					if (!(sender instanceof Player)) {
-						sender.sendMessage("You have to be a player to buy tickets!");
+						sender.sendMessage(loc.replace(loc.ERROR_NO_PLAYER));
 						return true;
 					}else{
 						buyTicket(sender, args);
@@ -54,6 +60,9 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 				}
 				else if(args[0].equalsIgnoreCase("info")){
 					info(sender);
+				}
+				else if(args[0].equalsIgnoreCase("stats")){
+					stats(sender);
 				}
 				else if(args[0].equalsIgnoreCase("reload")){
 					if(args.length>1&&args[1].equalsIgnoreCase("-f")){
@@ -86,10 +95,9 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 								BBLottery.economy.withdrawPlayer(sender.getName(), plugin.getManager().getPrice());
 							}
 						}else{
-							sender.sendMessage(prefix+"Please enter a valid ticketnumber between 1 and "+plugin.getManager().getRange()+"!");
-						}
+							sender.sendMessage(prefix+loc.replace(loc.ERROR_RANGE));						}
 					}else{
-						sender.sendMessage(prefix+"Please enter a valid ticketnumber between 1 and "+plugin.getManager().getRange()+"!");
+						sender.sendMessage(prefix+loc.replace(loc.ERROR_RANGE));
 					}
 				}else{
 					if(plugin.getManager().buyTicket((Player)sender)){
@@ -97,7 +105,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 					}
 				}
 			}else{
-				sender.sendMessage(prefix+ChatColor.GREEN+"You do not have enough money to buy a lottery-ticket!");
+				sender.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.ERROR_MONEY));
 			}
 		}else{
 			sendNoPerm(sender);
@@ -106,26 +114,30 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 	
 	private void info(CommandSender sender){
 		double jp=plugin.getManager().getJackpot();
-		double price=plugin.getManager().getPrice();
-		int ticketNum=plugin.getManager().getBoughtTickets();
-		double tax=plugin.getManager().getTax()*100;
 		
-		sender.sendMessage(prefix+"Current Jackpot: "+jp+".");
-		sender.sendMessage(prefix+"Ticketprice: "+price);
-		sender.sendMessage(prefix+"Overall tickets bought for current draw: "+ ticketNum+".");
-		sender.sendMessage(prefix+"The tax on the tickets is "+tax+"%.");
-		sender.sendMessage(plugin.getManager().getStats());
+		sender.sendMessage(prefix+loc.replace(loc.INFO_JACKPOT));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_PRICE));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_TICKETS_ON_DRAW));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_TAX));
 		
 		if(sender instanceof Player){
 			sender.sendMessage("");
 			int[] ticketNums=plugin.getManager().getTickets((Player)sender);
 			if(ticketNums.length>0){
-				sender.sendMessage(prefix+"You bought the following tickets:");
+				sender.sendMessage(prefix+loc.replace(loc.INFO_INTRO));
 				for(int i=0;i<ticketNums.length;i++){
 					double fraction=jp/plugin.getManager().getNumOfTicketsForTicket(ticketNums[i]-1);
-					sender.sendMessage(prefix+" Ticket no. "+ticketNums[i]+ ", you would get "+fraction+" if this ticket would get drawn now.");
+					sender.sendMessage(prefix+loc.replace(loc.INFO_TICKETS_BOUGHT).replaceFirst("%n", ""+ticketNums[i]).replaceFirst("%n", ""+fraction));
 				}
 			}
+		}
+	}
+	
+	private void stats(CommandSender sender){
+		sender.sendMessage(plugin.getManager().getStats());
+		sender.sendMessage(prefix+loc.replace(loc.STATS_INTRO));
+		for(String s:plugin.getManager().getPlayerStats()){
+			sender.sendMessage(s);
 		}
 	}
 	
@@ -142,6 +154,8 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 			if(flag){
 				sender.sendMessage(prefix+"Reloading config...");
 				plugin.reloadConfig();
+				plugin.getLoc().reloadCustomConfig();
+				plugin.getLoc().loadStrings();
 				sender.sendMessage(prefix+"Reloading lottery...");
 				plugin.getSave().reloadCustomConfig();
 				sender.sendMessage(prefix+"Finished!");
@@ -149,6 +163,8 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 				plugin.getManager().save();
 				sender.sendMessage(prefix+"Reloading config...");
 				plugin.reloadConfig();
+				plugin.getLoc().reloadCustomConfig();
+				plugin.getLoc().loadStrings();
 				sender.sendMessage(prefix+"Finished!");
 			}
 			plugin.getManager().loadConfigData(flag);
@@ -158,6 +174,6 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 	}
 	
 	private void sendNoPerm(CommandSender sender){
-		sender.sendMessage(prefix+"Please enter a valid ticketnumber!");
+		sender.sendMessage(prefix+"You do not have enough permissions to do that!");
 	}
 }
