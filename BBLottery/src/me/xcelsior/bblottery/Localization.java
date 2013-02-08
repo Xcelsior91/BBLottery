@@ -23,6 +23,7 @@ public class Localization {
 	public  String ERROR_MAXTICKETS;
 	public  String INFO_JACKPOT;
 	public  String INFO_TICKETS_ON_DRAW;
+	public  String INFO_DRAWS_SINCE_WIN;
 	public  String INFO_TAX;
 	public  String INFO_PRICE;
 	public  String INFO_INTRO;
@@ -98,6 +99,7 @@ public class Localization {
 		INFO_TAX=customConfig.getString("info.tax");
 		INFO_INTRO=customConfig.getString("info.introBoughtTickets");
 		INFO_TICKETS_BOUGHT=customConfig.getString("info.boughtTicketInfo");
+		INFO_DRAWS_SINCE_WIN=customConfig.getString("info.drawsSinceWin");
 		STATS_INTRO=customConfig.getString("stats.intro");
 		STATS_TICKETS=customConfig.getString("stats.tickets");
 		STATS_DRAWS=customConfig.getString("stats.draws");

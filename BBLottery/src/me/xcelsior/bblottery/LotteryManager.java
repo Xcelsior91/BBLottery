@@ -30,6 +30,7 @@ public class LotteryManager {
 	int totalTickets;
 	int totalWins;
 	int totalWinners;
+	int drawsSinceLastWin;
 	double totalAmountWon;
 	HashMap<OfflinePlayer, String> playerStats;
 	Localization loc;
@@ -63,6 +64,12 @@ public class LotteryManager {
 						.getDouble("lottery.jackpot");
 			} else {
 				jackpotCurrent = jackpotInit;
+			}
+			
+			if(plugin.getSave().getCustomConfig().isSet("lottery.drawsSinceLastWin")){
+				drawsSinceLastWin=plugin.getSave().getCustomConfig().getInt("lottery.jackpot");
+			}else{
+				drawsSinceLastWin=0;
 			}
 	
 			for (int i = 0; i < range; i++) {
@@ -98,6 +105,7 @@ public class LotteryManager {
 	 */
 	public void save() {
 		plugin.getSave().getCustomConfig().set("lottery.jackpot", jackpotCurrent);
+		plugin.getSave().getCustomConfig().set("lottery.drawsSinceLastWin", drawsSinceLastWin);
 		for (int i = 0; i < range; i++) {
 			ArrayList<String> tmp = new ArrayList<String>();
 			for (OfflinePlayer p : tickets.get(i)) {
@@ -241,6 +249,7 @@ public class LotteryManager {
 		}else{
 			Bukkit.getServer().broadcastMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_NO_WINNER));
 			Bukkit.getServer().broadcastMessage(prefix+ChatColor.GREEN+loc.replace(loc.INFO_JACKPOT));
+			drawsSinceLastWin++;
 		}
 		resetTickets();
 		drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
@@ -372,5 +381,9 @@ public class LotteryManager {
 		
 		
 		return stats;
+	}
+	
+	public int getDrawsSinceLastWin(){
+		return drawsSinceLastWin;
 	}
 }

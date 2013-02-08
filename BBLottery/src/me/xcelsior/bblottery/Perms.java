@@ -7,6 +7,7 @@ public enum Perms {BUY("bblottery.buy"),
 	BUYMULTI("bblottery.buy.multi"),
 	DRAW("bblottery.draw"),
 	RELOAD("bblottery.reload"),
+	SIGN("bblottery.sign"),
 	ALL("bblottery.*");
 
 String perm;

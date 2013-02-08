@@ -118,6 +118,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 		sender.sendMessage(prefix+loc.replace(loc.INFO_JACKPOT));
 		sender.sendMessage(prefix+loc.replace(loc.INFO_PRICE));
 		sender.sendMessage(prefix+loc.replace(loc.INFO_TICKETS_ON_DRAW));
+		sender.sendMessage(prefix+loc.replace(loc.INFO_DRAWS_SINCE_WIN).replaceFirst("%[n,m]", ""+plugin.getManager().getDrawsSinceLastWin()));
 		sender.sendMessage(prefix+loc.replace(loc.INFO_TAX));
 		
 		if(sender instanceof Player){

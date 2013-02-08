@@ -24,6 +24,7 @@ info:
   jackpot: "Current Jackpot: %jp"
   price: "Ticketprice: %pr"
   ticketsOnDraw: "Overall tickets bought for current draw: %bt"
+  drawsSinceWin: "Draws since the lottery was last won: %n"
   tax: "The tax on the tickets is %t%."
   introBoughtTickets: "You bought the following tickets:"
   boughtTicketInfo: "Ticket no. %n, you would get %n if this ticket would get drawn now!"
