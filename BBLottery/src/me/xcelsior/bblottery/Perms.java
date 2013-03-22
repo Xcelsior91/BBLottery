@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 public enum Perms {BUY("bblottery.buy"),
 	BUYMULTI("bblottery.buy.multi"),
+	BUYOTHER("bblottery.buy.other"),
 	DRAW("bblottery.draw"),
 	RELOAD("bblottery.reload"),
 	SIGN("bblottery.sign"),
