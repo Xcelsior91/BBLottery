@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 
 public class LotteryManager {
-	ArrayList<ArrayList<OfflinePlayer>> tickets;
+	ArrayList<ArrayList<String>> tickets;
 
 	double jackpotInit;
 
@@ -32,7 +32,7 @@ public class LotteryManager {
 	int totalWinners;
 	int drawsSinceLastWin;
 	double totalAmountWon;
-	HashMap<OfflinePlayer, String> playerStats;
+	HashMap<String, String> playerStats;
 	Localization loc;
 
 	public LotteryManager(BBLottery plugin) {
@@ -40,7 +40,9 @@ public class LotteryManager {
 		
 		loadConfigData(true);
 		loc=plugin.getLoc();
-		drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
+		if(plugin.getConfig().getDouble("intervall")!=0){
+			drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
+		}
 
 	}
 	
@@ -57,7 +59,7 @@ public class LotteryManager {
 		tax=plugin.getConfig().getDouble("tax");
 		
 		if(lotteryFlag){
-			tickets=new ArrayList<ArrayList<OfflinePlayer>>();
+			tickets=new ArrayList<ArrayList<String>>();
 	
 			if (plugin.getSave().getCustomConfig().isSet("lottery.jackpot")) {
 				jackpotCurrent = plugin.getSave().getCustomConfig()
@@ -74,13 +76,13 @@ public class LotteryManager {
 	
 			if(range!=-1){
 			for (int i = 0; i < range; i++) {
-				ArrayList<OfflinePlayer> ptmp = new ArrayList<OfflinePlayer>();
+				ArrayList<String> ptmp = new ArrayList<String>();
 				if (plugin.getSave().getCustomConfig().isSet("lottery.tickets." + i)) {
 					@SuppressWarnings("unchecked")
 					List<String> tmp = (List<String>) plugin.getSave()
 							.getCustomConfig().getList("lottery.tickets." + i);
 					for (String s : tmp) {
-						ptmp.add(plugin.getServer().getOfflinePlayer(s));
+						ptmp.add(plugin.getServer().getOfflinePlayer(s).getName());
 					}
 				}
 				tickets.add(ptmp);
@@ -88,13 +90,13 @@ public class LotteryManager {
 			}else{
 				int i=0;
 				while(plugin.getSave().getCustomConfig().isSet("lottery.tickets." + i)){
-					ArrayList<OfflinePlayer> ptmp = new ArrayList<OfflinePlayer>();
+					ArrayList<String> ptmp = new ArrayList<String>();
 					if (plugin.getSave().getCustomConfig().isSet("lottery.tickets." + i)) {
 						@SuppressWarnings("unchecked")
 						List<String> tmp = (List<String>) plugin.getSave()
 								.getCustomConfig().getList("lottery.tickets." + i);
 						for (String s : tmp) {
-							ptmp.add(plugin.getServer().getOfflinePlayer(s));
+							ptmp.add(plugin.getServer().getOfflinePlayer(s).getName());
 						}
 					}
 					tickets.add(ptmp);
@@ -110,7 +112,7 @@ public class LotteryManager {
 			playerStats=new HashMap<>();
 			for(String s:plugin.getSave().getCustomConfig().getStringList("playerstats")){
 				String[] ps=s.split(":");
-				Player p=plugin.getServer().getPlayerExact(ps[0]);
+				String p=ps[0];
 				String st=ps[1]+":"+ps[2];
 				playerStats.put(p, st);
 			}
@@ -124,11 +126,11 @@ public class LotteryManager {
 		plugin.getSave().getCustomConfig().set("lottery.jackpot", jackpotCurrent);
 		plugin.getSave().getCustomConfig().set("lottery.drawsSinceLastWin", drawsSinceLastWin);
 		
-		if(range==-1){
+		if(range!=-1){
 			for (int i = 0; i < range; i++) {
 				ArrayList<String> tmp = new ArrayList<String>();
-				for (OfflinePlayer p : tickets.get(i)) {
-					tmp.add(p.getName());
+				for (String p : tickets.get(i)) {
+					tmp.add(p);
 				}
 				plugin.getSave().getCustomConfig().set("lottery.tickets." + i, tmp);
 			}
@@ -136,12 +138,13 @@ public class LotteryManager {
 			int i=0;
 			while(!tickets.get(i).isEmpty()){
 				ArrayList<String> tmp = new ArrayList<String>();
-				for (OfflinePlayer p : tickets.get(i)) {
-					tmp.add(p.getName());
+				for (String p : tickets.get(i)) {
+					tmp.add(p);
 				}
 				plugin.getSave().getCustomConfig().set("lottery.tickets." + i, tmp);
+				i++;
 			}
-			i++;
+			
 		}
 		plugin.getSave().getCustomConfig().set("stats.total-draws", totalDraws);
 		plugin.getSave().getCustomConfig().set("stats.total-tickets", totalTickets);
@@ -151,8 +154,8 @@ public class LotteryManager {
 		
 
 		ArrayList<String> list=new ArrayList<>();
-		for(OfflinePlayer p:playerStats.keySet()){
-			list.add(p.getName()+":"+playerStats.get(p));
+		for(String p:playerStats.keySet()){
+			list.add(p+":"+playerStats.get(p));
 		}
 		plugin.getSave().getCustomConfig().set("playerStats", list);
 		
@@ -165,7 +168,7 @@ public class LotteryManager {
 	 * @param pl The Player to check for
 	 * @return true if Player can buy more tickets, else false
 	 */
-	private boolean checkTickets(Player pl) {
+	private boolean checkTickets(String pl) {
 		int amnt = 0;
 		for (@SuppressWarnings("rawtypes") List lst : tickets) {
 			if (lst.contains(pl)) {
@@ -186,7 +189,7 @@ public class LotteryManager {
 	 * @return true if ticket was bought, else false which means pl has max Tickets
 	 */
 	public boolean buyTicket(Player pl) {
-		if (checkTickets(pl)) {
+		if (checkTickets(pl.getName())) {
 			int ticketNum;
 			if(range!=-1){
 				ticketNum = (int) (Math.random() * range);
@@ -196,10 +199,10 @@ public class LotteryManager {
 					ticketNum++;
 				}
 				if(tickets.size()<=ticketNum){
-					tickets.add(new ArrayList<OfflinePlayer>());
+					tickets.add(new ArrayList<String>());
 				}
 			}
-			tickets.get(ticketNum).add(pl);
+			tickets.get(ticketNum).add(pl.getName());
 			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHT).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+(ticketNum+1)+ChatColor.GREEN));
 			jackpotCurrent+=(price-(price*tax));
 			totalTickets++;
@@ -218,8 +221,8 @@ public class LotteryManager {
 	 * @return true if ticket was bought, else false which means pl has max Tickets
 	 */
 	public boolean buyTicket(Player pl, int num){
-		if(checkTickets(pl)){
-			tickets.get(num-1).add(pl);
+		if(checkTickets(pl.getName())){
+			tickets.get(num-1).add(pl.getName());
 			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHT).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+num+ChatColor.GREEN));
 			jackpotCurrent+=(price-(price*tax));
 			totalTickets++;
@@ -239,7 +242,7 @@ public class LotteryManager {
 	 * @return Whether the Ticket was bought successfully or not
 	 */
 	public boolean proxyBuyTicket(String proxy, Player pl){
-		if(checkTickets(pl)){
+		if(checkTickets(pl.getName())){
 			int ticketNum;
 			if(range!=-1){
 				ticketNum = (int) (Math.random() * range);
@@ -249,10 +252,10 @@ public class LotteryManager {
 					ticketNum++;
 				}
 				if(tickets.size()<=ticketNum){
-					tickets.add(new ArrayList<OfflinePlayer>());
+					tickets.add(new ArrayList<String>());
 				}
 			}
-			tickets.get(ticketNum).add(pl);
+			tickets.get(ticketNum).add(pl.getName());
 			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHTBYOTHER).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+(ticketNum+1)+ChatColor.GREEN).replaceAll("%pn", proxy));
 			if(!proxy.equalsIgnoreCase("Console"))
 				plugin.getServer().getPlayerExact(proxy).sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHTOTHER).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+(ticketNum+1)+ChatColor.GREEN).replaceAll("%pn", pl.getName()));
@@ -275,8 +278,8 @@ public class LotteryManager {
 	 * @return Whether the Ticket was bought successfully or not
 	 */
 	public boolean proxyBuyTicket(String proxy, Player pl, int num){
-		if(checkTickets(pl)){
-			tickets.get(num-1).add(pl);
+		if(checkTickets(pl.getName())){
+			tickets.get(num-1).add(pl.getName());
 			pl.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHTBYOTHER).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+num+ChatColor.GREEN).replaceAll("%pn", proxy));
 			if(!proxy.equalsIgnoreCase("Console"))
 				plugin.getServer().getPlayerExact(proxy).sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.TICKET_BOUGHTOTHER).replaceAll("%[n,m]",""+ChatColor.DARK_PURPLE+(num+1)+ChatColor.GREEN));
@@ -309,12 +312,12 @@ public class LotteryManager {
 		}
 		Bukkit.getServer().broadcastMessage(
 				prefix + ChatColor.GREEN + loc.replace(loc.DRAW_INTRO).replaceAll("%n", ""+ ChatColor.GOLD + drawn + ChatColor.GREEN));
-		ArrayList<OfflinePlayer> winners = tickets.get(drawn - 1);
+		ArrayList<String> winners = tickets.get(drawn - 1);
 		if (winners.size() > 0) {
-			String winner = winners.get(0).getName();
-			for (OfflinePlayer pl : winners) {
+			String winner = winners.get(0);
+			for (String pl : winners) {
 				if(pl!=winners.get(0)){
-					winner = winner + ", " + pl.getName();
+					winner = winner + ", " + pl;
 				}
 			}
 			totalWins++;
@@ -327,11 +330,11 @@ public class LotteryManager {
 							+ (winners.size() > 1 ? loc.replace(loc.DRAW_MULTI_WINNER).replaceAll("%pn", winner)
 									: loc.replace(loc.DRAW_SINGLE_WINNER).replaceAll("%pn", winner)));
 			if(tickets.get(drawn - 1).size()==1){//single winner
-				OfflinePlayer pl=tickets.get(drawn-1).get(0);
-				if(pl.getPlayer()!=null){
-					pl.getPlayer().sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_SINGLE_NOTIFICATION).replaceAll("%[n, m]",""+jackpotCurrent));
+				String pl=tickets.get(drawn-1).get(0);
+				if(pl!=null&&!pl.equals("")){
+					Bukkit.getPlayerExact(pl).sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_SINGLE_NOTIFICATION).replaceAll("%[n, m]",""+jackpotCurrent));
 				}
-				BBLottery.economy.depositPlayer(pl.getName(), jackpotCurrent);
+				BBLottery.economy.depositPlayer(pl, jackpotCurrent);
 				
 				
 				if(playerStats.get(pl)==null){
@@ -345,11 +348,11 @@ public class LotteryManager {
 				
 			}else{//multiple winners
 				double amnt=jackpotCurrent/tickets.get(drawn - 1).size();
-				for(OfflinePlayer p:tickets.get(drawn - 1)){
-					if(p.getPlayer()!=null){
-						p.getPlayer().sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_SINGLE_NOTIFICATION).replaceAll("%[n, m]",""+amnt));
+				for(String p:tickets.get(drawn - 1)){
+					if(p!=null&&!p.equals("")){
+						Bukkit.getPlayerExact(p).sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.DRAW_SINGLE_NOTIFICATION).replaceAll("%[n, m]",""+amnt));
 					}
-					BBLottery.economy.depositPlayer(p.getName(), amnt);
+					BBLottery.economy.depositPlayer(p, amnt);
 					
 					String[] st=playerStats.get(p).split(":");
 					double totalAmntPlayerWon=Double.parseDouble(st[0])+amnt;
@@ -367,7 +370,9 @@ public class LotteryManager {
 			drawsSinceLastWin++;
 		}
 		resetTickets();
-		drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
+		if(plugin.getConfig().getDouble("intervall")!=0){
+			drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
+		}
 		save();
 
 	}
@@ -448,7 +453,7 @@ public class LotteryManager {
 	 */
 	public int getBoughtTickets(){
 		int amnt=0;
-		for(ArrayList<OfflinePlayer> lst:tickets){
+		for(ArrayList<String> lst:tickets){
 			amnt+=lst.size();
 		}
 		return amnt;
@@ -464,15 +469,15 @@ public class LotteryManager {
 	 * resets the lists of bought tickets
 	 */
 	private void resetTickets(){
-		tickets=new ArrayList<ArrayList<OfflinePlayer>>();
+		tickets=new ArrayList<ArrayList<String>>();
 		if(range!=-1){
 		for(int i=0;i<range;i++){
-			tickets.add(new ArrayList<OfflinePlayer>());
+			tickets.add(new ArrayList<String>());
 		}}
 		else{
 			int players=plugin.getServer().getOfflinePlayers().length;
 			for(int i=0;i<players;i++){
-				tickets.add(new ArrayList<OfflinePlayer>());
+				tickets.add(new ArrayList<String>());
 			}
 		}
 		
@@ -497,9 +502,9 @@ public class LotteryManager {
 	public ArrayList<String> getPlayerStats(){
 		ArrayList<String> stats=new ArrayList<>();
 		
-		for(OfflinePlayer p:playerStats.keySet()){
+		for(String p:playerStats.keySet()){
 			String[] s=playerStats.get(p).split(":");
-			stats.add(prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_AMOUNT_PP).replaceAll("%pn", p.getName()).replaceAll("%n",s[0]).replaceAll("%m", s[1]));
+			stats.add(prefix+ChatColor.DARK_GREEN+loc.replace(loc.STATS_AMOUNT_PP).replaceAll("%pn", p).replaceAll("%n",s[0]).replaceAll("%m", s[1]));
 		}
 		
 		

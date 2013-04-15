@@ -90,7 +90,7 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 	private void buyTicket(CommandSender sender, String[] args){
 		if(Perms.hasPerm(sender, Perms.BUY)){
 			if(BBLottery.economy.getBalance(sender.getName())>=plugin.getManager().getPrice()){
-				if(plugin.getManager().getRange()!=-1&&args[1].matches("\\d+")){
+				if(plugin.getManager().getRange()!=-1&&args.length>1&&args[1].matches("\\d+")){
 					int ticketNum=Integer.parseInt(args[1]);
 					if(ticketNum>0&&ticketNum<=plugin.getManager().getRange()){
 						if(plugin.getManager().buyTicket((Player)sender, ticketNum)){
@@ -100,13 +100,14 @@ public class CommandExecutor_Lottery implements CommandExecutor {
 						sender.sendMessage(prefix+loc.replace(loc.ERROR_RANGE));
 					}
 				}
+				else{
+					if(plugin.getManager().buyTicket((Player)sender)){
+						BBLottery.economy.withdrawPlayer(sender.getName(), plugin.getManager().getPrice());
+					}
+				}
 			
 				
-			else{
-				if(plugin.getManager().buyTicket((Player)sender)){
-					BBLottery.economy.withdrawPlayer(sender.getName(), plugin.getManager().getPrice());
-				}
-			}
+			
 			}else{
 				sender.sendMessage(prefix+ChatColor.GREEN+loc.replace(loc.ERROR_MONEY));
 			}

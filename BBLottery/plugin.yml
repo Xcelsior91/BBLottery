@@ -1,6 +1,6 @@
 name: BBLottery
 main: me.xcelsior.bblottery.BBLottery
-version: 1.2
+version: 1.2.1
 website: http://
 author: Xcelsior
 depends: [Vault]
