@@ -16,13 +16,18 @@ public class Localization {
 	private BBLottery plugin;
 
 	public  String TICKET_BOUGHT;
+	public  String TICKET_BOUGHTOTHER;
+	public  String TICKET_BOUGHTBYOTHER;
 	public  String[] HELP;
 	public  String ERROR_NO_PLAYER;
 	public  String ERROR_RANGE;
 	public  String ERROR_MONEY;
 	public  String ERROR_MAXTICKETS;
+	public 	String ERROR_OTHER_MAXTICKETS;
+	public  String ERROR_INVALIDPLAYER;
 	public  String INFO_JACKPOT;
 	public  String INFO_TICKETS_ON_DRAW;
+	public  String INFO_DRAWS_SINCE_WIN;
 	public  String INFO_TAX;
 	public  String INFO_PRICE;
 	public  String INFO_INTRO;
@@ -87,17 +92,22 @@ public class Localization {
 	
 	public void loadStrings(){
 		TICKET_BOUGHT=customConfig.getString("ticketBought");
-		HELP=customConfig.getStringList("help").toArray(new String[9]);
+		TICKET_BOUGHTOTHER=customConfig.getString("ticketBoughtOther");
+		TICKET_BOUGHTBYOTHER=customConfig.getString("ticketBoughByProxy");
+		HELP=customConfig.getStringList("help").toArray(new String[10]);
 		ERROR_NO_PLAYER=customConfig.getString("error.noPlayer");
 		ERROR_RANGE=customConfig.getString("error.ticketRange");
 		ERROR_MONEY=customConfig.getString("error.money");
 		ERROR_MAXTICKETS=customConfig.getString("error.maxTickets");
+		ERROR_OTHER_MAXTICKETS=customConfig.getString("otherMaxTickets");
+		ERROR_INVALIDPLAYER=customConfig.getString("error.invalidPlayer");
 		INFO_JACKPOT=customConfig.getString("info.jackpot");
 		INFO_TICKETS_ON_DRAW=customConfig.getString("info.ticketsOnDraw");
 		INFO_PRICE=customConfig.getString("info.price");
 		INFO_TAX=customConfig.getString("info.tax");
 		INFO_INTRO=customConfig.getString("info.introBoughtTickets");
 		INFO_TICKETS_BOUGHT=customConfig.getString("info.boughtTicketInfo");
+		INFO_DRAWS_SINCE_WIN=customConfig.getString("info.drawsSinceWin");
 		STATS_INTRO=customConfig.getString("stats.intro");
 		STATS_TICKETS=customConfig.getString("stats.tickets");
 		STATS_DRAWS=customConfig.getString("stats.draws");

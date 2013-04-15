@@ -9,12 +9,15 @@
 #%pn -> player name(s)
 
 ticketBought: "You bought a ticket! Your ticket has the number %n!"
+ticketBoughtOther: "You bought a ticket for %pn!"
+ticketBoughByProxy: "%pn bought a ticket for you! It has the number %n!"
 #Do not add/remove lines!
 help:
   - "This is the help for the Lottery!"
   - "There are the following Commands that you may have acces to:"
   - "Shows this help."
   - "Buys yourself a ticket for the next lottery, you may chose a number yourself if you want."
+  - "Buys a ticket for someone else, you may chose a number if you want."
   - "Shows you the current Jackpot, ticketprice, tickets bought, ticket-tax and infos about tickets you bought"
   - "Shows you stats about the lottery and about the winners of the lottery"
   - "The following commands are mostly for ops or Admins, so you may not have acces to them:"
@@ -24,6 +27,7 @@ info:
   jackpot: "Current Jackpot: %jp"
   price: "Ticketprice: %pr"
   ticketsOnDraw: "Overall tickets bought for current draw: %bt"
+  drawsSinceWin: "Draws since the lottery was last won: %n"
   tax: "The tax on the tickets is %t%."
   introBoughtTickets: "You bought the following tickets:"
   boughtTicketInfo: "Ticket no. %n, you would get %n if this ticket would get drawn now!"
@@ -47,3 +51,5 @@ error:
   ticketRange: "Please enter a valid ticketnumber between 1 and %r!"
   money: "You do not have enough money to buy a lottery-ticket!"
   maxTickets: "You allready have the maximum amount of tickets!"
+  otherMaxTickets: "%pn allready has the maximum amount of tickets!"
+  invalidPlayer: "There is no player with name %pn"
