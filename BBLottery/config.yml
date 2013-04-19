@@ -1,4 +1,5 @@
 intervall: 60
+spefific_time: 00h00
 pot: 10000
 range: 50
 maxTickets: 1

@@ -9,10 +9,12 @@ package me.xcelsior.bblottery.tasks;
 
 
 
+import java.util.TimerTask;
+
 import me.xcelsior.bblottery.BBLottery;
 
 
-public class Task_Draw implements Runnable{
+public class Task_Draw extends TimerTask{
 	private BBLottery plugin;
 
 	public Task_Draw(BBLottery plugin){

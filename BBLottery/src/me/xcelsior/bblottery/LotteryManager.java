@@ -1,14 +1,16 @@
 package me.xcelsior.bblottery;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
 
 import me.xcelsior.bblottery.tasks.Task_Draw;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 
@@ -34,16 +36,37 @@ public class LotteryManager {
 	double totalAmountWon;
 	HashMap<String, String> playerStats;
 	Localization loc;
+	
+	Timer _timer;
 
 	public LotteryManager(BBLottery plugin) {
 		this.plugin = plugin;
 		
+		_timer=new Timer();
 		loadConfigData(true);
 		loc=plugin.getLoc();
-		if(plugin.getConfig().getDouble("intervall")!=0){
-			drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
-		}
+		
+		scheduleDraw();
 
+	}
+	
+	private void scheduleDraw(){
+		if(plugin.getConfig().getDouble("intervall")!=0){
+			_timer.schedule(new Task_Draw(plugin), (long)plugin.getConfig().getDouble("intervall")*60*1000);
+		}else{
+			Calendar c=Calendar.getInstance();
+			String time=plugin.getConfig().getString("spefific_time");
+			int h=Integer.parseInt(time.split("h")[0]);
+			int min=Integer.parseInt(time.split("h")[1]);
+			
+			c.set(Calendar.HOUR_OF_DAY, h);
+			c.set(Calendar.MINUTE, min);
+			c.set(Calendar.SECOND, 0);
+			
+			Date d=c.getTime();
+			
+			_timer.schedule(new Task_Draw(plugin), d);
+		}
 	}
 	
 	/**
@@ -370,9 +393,7 @@ public class LotteryManager {
 			drawsSinceLastWin++;
 		}
 		resetTickets();
-		if(plugin.getConfig().getDouble("intervall")!=0){
-			drawTaskID=plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Task_Draw(plugin), intervall);
-		}
+		scheduleDraw();
 		save();
 
 	}
